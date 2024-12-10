@@ -40,11 +40,15 @@ INSTALLED_APPS = [
 
     
     "rest_framework",
-    "rest_framework_simplejwt",
+    'drf_yasg',
     'django_filters',
-
-    # 'event', 
-    # 'tourism',
+    'accounts',
+    'categories',
+    'events',
+    'tickets',
+    'comments',
+    'tourism',
+    'tags',
 
 
 ]
@@ -109,6 +113,21 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+
+# Informations sur l'API pour Swagger
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basicAuth': {
+            'type': 'basic',
+            'description': 'Basic Authentication',
+        },
+    },
+    'DOC_EXPANSION': 'none', 
+    'OPERATIONS_SORTER': 'alpha', 
+    'USE_SESSION_AUTH': False,
+    'JSON_EDITOR': True,  
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
