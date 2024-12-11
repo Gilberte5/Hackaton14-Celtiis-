@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ariya</title>
+    <!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/brands.min.css" integrity="sha512-7rXIvd/xj1FnI2zKQjjXzDFxC4twqBByp8yxOgEQJs4C/aNzNyoQsOO7VxH0RgYNhbAYLJLwzqslaP50KTTHIQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<!-- Font Awesome --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/fontawesome.min.css" integrity="sha512-lauN4D/0AgFUGvmMR+knQnbOADyD/XuQ8VF18I8Ll0+TLvsujshyxvU+uzogmQbSq6qJd5jnUdYtK8ShxXMlSg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-CRX5wCFU.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Cl58cru-.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script src="public/js-sdk.min.js"> </script>
+    <script src="public/vconsole.min.js"> </script>
+
+    <script>
+      var vConsole = new VConsole();
+      window.onload = login() 
+      function login() {
+        <!-- Invoke JSSDK:gethwssostring(parameter is merchantAppId) to develop autologin -->
+        window.ma.callNativeAPI("gethwssostring",  { merchantAppId: '1322098216422402' }, res => { 
+          console.log("superapptoken res:", res);
+          console.log("superapptoken:", res.xm_string_callback_key);
+          var superapptoken = res.xm_string_callback_key
+      
+          $.ajax({
+            url: 'https://pub-za.appcubecloud.com/baas/auth/v1.0/oauth2/token',//replace the url to your mini program get accesstoken API
+            method: 'POST',
+            async: true,
+            data: {
+              client_id: "6e4e70085092b692f0ca5c375043d8ff",
+              client_secret: "f42b2f4e9fc3786939db3b0687b9b2846ec3d3fb3561f5ff",
+              grant_type: "client_credentials"
+            },//replace to the data request by your mini program server
+            success: function (response) {
+              console.log('miniservertoken:', response.access_token);
+              var miniservertoken = response.access_token
+      
+              $.ajax({
+                url: 'https://pub-za.appcubecloud.com/service/D4F__ariya/1.0.0/tags',//replace the url with your mini program get mini program user token API
+                method: 'POST',
+                async: true,
+                headers: {
+                  'Content-Type': "application/json",
+                  'access-token': miniservertoken
+                },
+                data: JSON.stringify({
+                  "authCode": superapptoken
+                }),
+                success: function (response) {
+                  console.log('miniusertoken:', response['result']['access-token']);
+                  window.accesstoken = response['result']['access-token']
+                },
+                error: function (xhr, status, error) {
+                  console.log('miniusertoken create fail', error);
+                }
+              });
+      
+            },
+            error: function (xhr, status, error) {
+              console.log('miniservertoken create fail', error);
+            }
+          });
+      
+        }).catch((e) => {
+          console.log("superapptoken create fail", e);
+        }
+        );
+      }
+    </script>
+
+  </body>
+</html>
